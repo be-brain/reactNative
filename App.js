@@ -1,19 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { nanoid } from "nanoid";
-import {
-  StyleSheet,
-  TextInput,
-  View,
-  Text,
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
-  LinearLayout,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
-import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { StyleSheet, TextInput, View, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Category from "./components/Category";
+import Todo from "./components/Todo";
 
 export default function App() {
   // 원래있던 todos를 새로운 todos로
@@ -108,35 +97,7 @@ export default function App() {
   return (
     <View contentContainerStyle={{ flexGrow: 1 }} style={styles.safeArea}>
       <View style={styles.appContainer}>
-        <View style={styles.categoryContainer}>
-          <TouchableOpacity
-            style={{
-              ...styles.categoryItemBox,
-              backgroundColor: category === "js" ? "blue" : "lightblue",
-            }}
-            onPress={() => setField("js")}
-          >
-            <Text style={styles.categoryItem}>Javascript</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setField("react")}
-            style={{
-              ...styles.categoryItemBox,
-              backgroundColor: category === "react" ? "blue" : "lightblue",
-            }}
-          >
-            <Text style={styles.categoryItem}>React</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setField("ct")}
-            style={{
-              ...styles.categoryItemBox,
-              backgroundColor: category === "ct" ? "blue" : "lightblue",
-            }}
-          >
-            <Text style={styles.categoryItem}>Coding Test</Text>
-          </TouchableOpacity>
-        </View>
+        <Category setField={setField} category={category} />
         <View style={styles.line}></View>
         <View style={styles.inputContainer}>
           <TextInput
@@ -148,66 +109,20 @@ export default function App() {
           />
         </View>
         <View style={styles.line}></View>
-
         <View style={styles.listContainer}>
           {todos.map((item) => {
             if (item.category === category) {
               return (
-                <View key={item.id} style={styles.listBox}>
-                  {item.isEdit ? (
-                    <TextInput
-                      value={editText}
-                      onChangeText={setEditText}
-                      onSubmitEditing={() => {
-                        editTodo(item.id);
-                      }}
-                      style={{ backgroundColor: "#fff", flex: 1 }}
-                    ></TextInput>
-                  ) : (
-                    <Text
-                      style={{
-                        textDecorationLine:
-                          item.isDone === true ? "line-through" : "none",
-                        fontSize: 20,
-                      }}
-                    >
-                      {item.text}
-                    </Text>
-                  )}
-
-                  <View style={styles.checkItem}>
-                    <TouchableOpacity>
-                      <AntDesign
-                        name="checksquare"
-                        size={24}
-                        color="black"
-                        onPress={() => {
-                          setDone(item.id);
-                        }}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <FontAwesome
-                        name="pencil-square-o"
-                        size={24}
-                        color="black"
-                        onPress={() => {
-                          setEdit(item.id);
-                        }}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Ionicons
-                        name="trash-outline"
-                        size={24}
-                        color="black"
-                        onPress={() => {
-                          deleteTodo(item.id);
-                        }}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <Todo
+                  key={item.id}
+                  item={item}
+                  setDone={setDone}
+                  setEdit={setEdit}
+                  setEditText={setEditText}
+                  editText={editText}
+                  editTodo={editTodo}
+                  deleteTodo={deleteTodo}
+                />
               );
             }
           })}
@@ -231,19 +146,6 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 20,
   },
-  categoryContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "90%",
-  },
-  categoryItemBox: {
-    width: 100,
-    height: 60,
-  },
-  categoryItem: {
-    textAlign: "center",
-    lineHeight: 52,
-  },
 
   inputContainer: {
     flexDirection: "row",
@@ -256,23 +158,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 5,
     paddingLeft: 10,
-  },
-  listContainer: {
-    width: "100%",
-    backgroundColor: "blue",
-  },
-  listBox: {
-    backgroundColor: "lightgray",
-    padding: 5,
-    marginBottom: 20,
-    marginHorizontal: 20,
-    paddingLeft: 15,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  checkItem: {
-    backgroundColor: "green",
-    flexDirection: "row",
-    marginRight: 10,
   },
 });
